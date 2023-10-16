@@ -25,35 +25,35 @@ This project is a simple Back-end NFT Marketplace app implemented using Django t
 ### Installation
 
 1. Clone the repository:
-
+```shell
    git clone https://github.com/anfegu/cheap-nft-mktplace-anfegu.git
-
+```
 2. Navigate to the project directory
-
+```shell
 	cd nft-mktplace-app
-
+```
 3. Create a virtual environment and activate it (optional but recommended):
-
+```shell
 	python -m venv myenvsource
  	myenv/bin/activate  
 	# On Linux/macOS# Or for Windows: myenv\Scripts\activate
-
+```
 4. Copy the .env_sample file to the .env file	:
-
+```shell
 	cp .env_sample .env
-
+```
 5. Install project dependencies:
-
+```shell
 	pip install -r requirements.txt
-
+```
 6. Migrate the database:
-
+```shell
 	python manage.py migrate
-
+```
 7. Run the development server:
-
+```shell
 	python manage.py runserver
-
+```
 ## Usage
 
 ### API Endpoints
@@ -83,6 +83,7 @@ To settle a trade using the Settler contract, you need to make a POST request to
 "bidder_signature": "0xYourBidderSignature",
 "owner_signature": "0xYourOwnerSignature"
 }
+```
 
 ## Project Structure
 

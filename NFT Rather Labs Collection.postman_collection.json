@@ -1,0 +1,571 @@
+{
+	"info": {
+		"_postman_id": "e7998aba-0303-407a-b9b2-d20ee5b68f4f",
+		"name": "NFT Rather Labs Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26250442"
+	},
+	"item": [
+		{
+			"name": "UserA_MintNFT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const tokenId = pm.response.json().nft_token_id;",
+							"pm.variables.set(\"nft_token_id\", tokenId);",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields - message and nft_token_id\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.message).to.exist;",
+							"  pm.expect(responseData.nft_token_id).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"nft_token_id is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.nft_token_id).to.be.a('number');",
+							"    pm.expect(responseData.nft_token_id).to.be.at.least(0);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.message).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"private_key\": \"{{UserA_PKey}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/mint_nft/"
+			},
+			"response": []
+		},
+		{
+			"name": "Create_NFT_To_List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const tokenNameId = pm.response.json().id;",
+							"pm.variables.set(\"token_name_id\", tokenNameId);",
+							"const tokenName = pm.response.json().name;",
+							"pm.variables.set(\"token_name\", tokenName);",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.equal(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields - id, name, and description\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist;",
+							"    pm.expect(responseData.name).to.exist;",
+							"    pm.expect(responseData.description).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.name).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Description is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.description).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify that the 'id' is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.id).to.be.at.least(0, \"ID should be a non-negative integer\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{nft_token_id}}\",\n    \"description\": \"Token Test Description #{{nft_token_id}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/nfttokens/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"nfttokens",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listing_NFT_Auction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');",
+							"",
+							"pm.variables.set('currentdate', moment().format((\"YYYY-MM-DDTHH:mm:ssZ\")));",
+							"pm.variables.set('currentdate_postday', moment().add(1, 'days').format((\"YYYY-MM-DDTHH:mm:ssZ\")));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const listingId = pm.response.json().id;",
+							"pm.variables.set(\"listing_id\", listingId);",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Seller is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.seller).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Seller should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Price is a positive number\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.price).to.be.a('number').and.to.be.above(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\": \"5\",\n    \"token\": {{token_name_id}},\n    \"seller\": \"UserA\",\n    \"is_auction\": true,\n    \"start_time\": \"{{currentdate}}\",\n    \"end_time\": \"{{currentdate_postday}}\",\n    \"current_highest_bid\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/listings/"
+			},
+			"response": []
+		},
+		{
+			"name": "Listing_NFT_AuctionEndedCase",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');",
+							"",
+							"pm.variables.set('currentdate_preday', moment().subtract(1, 'days').format((\"YYYY-MM-DDTHH:mm:ssZ\")));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const listingIdEnd = pm.response.json().id;",
+							"pm.variables.set(\"listing_id_ended\", listingIdEnd);",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.equal(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Seller is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.seller).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Seller should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Price is a positive number\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.price).to.be.a('number').and.to.be.greaterThan(0);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Start time and end time are in valid date format\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.start_time).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+							"  pm.expect(responseData.end_time).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\": \"5\",\n    \"token\": {{token_name_id}},\n    \"seller\": \"UserA\",\n    \"is_auction\": true,\n    \"start_time\": \"{{currentdate_preday}}\",\n    \"end_time\": \"{{currentdate_preday}}\",\n    \"current_highest_bid\": \"4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/listings/"
+			},
+			"response": []
+		},
+		{
+			"name": "UserB_MintERC20",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields - message and balance_erc20_token\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.message).to.exist;",
+							"    pm.expect(responseData.balance_erc20_token).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Balance of ERC20 token is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.balance_erc20_token).to.be.a('number');",
+							"    pm.expect(responseData.balance_erc20_token).to.be.at.least(0);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"private_key\": \"{{UserB_PKey}}\",\n    \"amount\": 5\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/mint_erc20/"
+			},
+			"response": []
+		},
+		{
+			"name": "Bidding_NFT_Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const bidAmount = pm.response.json().amount;",
+							"pm.variables.set(\"bid_amount\", bidAmount);",
+							"pm.test(\"Response status code is 201\", function () {",
+							"  pm.expect(pm.response.code).to.equal(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the 'id' field in the response\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the bidder field in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.bidder).to.exist.and.to.be.a('string');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the 'amount' field in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.amount).to.exist.and.to.be.a('number');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the 'listing' field in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.listing).to.exist.and.to.be.a('number');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bidder\": \"UserB\",\n    \"amount\": \"4.5\",\n    \"listing\": {{listing_id}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/bids/"
+			},
+			"response": []
+		},
+		{
+			"name": "Bidding_NFT_Auction_Ended",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"  pm.expect(pm.response.code).to.equal(400);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the 'detail' field\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.detail).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Detail field is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.detail).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify request body format and required fields\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object', \"Response should be an object\");",
+							"  pm.expect(responseData.detail).to.exist.and.to.be.a('string', \"Detail field should exist and be a string\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bidder\": \"UserB\",\n    \"amount\": \"5\",\n    \"listing\": {{listing_id_ended}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/bids/"
+			},
+			"response": []
+		},
+		{
+			"name": "Settle_Trade",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.expect(pm.response.code).to.equal(400);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the error field\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.error).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Error message is not empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.error).to.exist.and.to.not.be.empty;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Error message is a string\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.error).to.be.a('string');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Error message is descriptive\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.error).to.exist.and.to.be.a('string', \"Error message should be a string\");",
+							"  pm.expect(responseData.error).to.not.be.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"auctionData\":{\n \"collectionAddress\": \"0xFCE9b92eC11680898c7FE57C4dDCea83AeabA3ff\",\n \"erc20Address\": \"0xbd65c58D6F46d5c682Bf2f36306D461e3561C747\",\n \"tokenId\": {{token_name}},\n \"bid\": {{bid_amount}}\n },\n\"bidderSig\": \"{{UserB_PKey}}\",\n\"ownerApprovedSig\": \"{{UserA_PKey}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/settle_trade/"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "UserA_PKey",
+			"value": "f362f1f67c8bd907a8ac8897352d5f90025e2bd7346584a2b23ca0fac1a042d5",
+			"type": "string"
+		},
+		{
+			"key": "UserB_PKey",
+			"value": "502d3b2106fd23064fb0f5a8729c9c59081c773d9a72ca84d8237d751e1a74b1",
+			"type": "string"
+		}
+	]
+}
