@@ -559,12 +559,12 @@
 	"variable": [
 		{
 			"key": "UserA_PKey",
-			"value": "f362f1f67c8bd907a8ac8897352d5f90025e2bd7346584a2b23ca0fac1a042d5",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "UserB_PKey",
-			"value": "502d3b2106fd23064fb0f5a8729c9c59081c773d9a72ca84d8237d751e1a74b1",
+			"value": "",
 			"type": "string"
 		}
 	]
