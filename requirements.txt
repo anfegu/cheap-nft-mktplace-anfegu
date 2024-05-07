@@ -20,7 +20,7 @@ eth-typing==3.5.0
 eth-utils==2.2.1
 frozenlist==1.4.0
 hexbytes==0.3.1
-idna==3.4
+idna==3.7
 jsonschema==4.19.1
 jsonschema-specifications==2023.7.1
 lru-dict==1.2.0
