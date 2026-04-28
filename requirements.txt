@@ -28,7 +28,7 @@ multidict==6.0.4
 parsimonious==0.9.0
 protobuf==6.33.5
 pycryptodome==3.19.1
-python-dotenv==1.0.0
+python-dotenv==1.2.2
 pytz==2023.3.post1
 pyunormalize==15.0.0
 referencing==0.30.2
